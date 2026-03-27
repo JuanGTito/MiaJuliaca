@@ -54,6 +54,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/usuarios/{user}/promocion',  [PromocionController::class, 'create'])->name('promociones.create');
     Route::post('/usuarios/{user}/promocion', [PromocionController::class, 'store'])->name('promociones.store');
     Route::delete('/promociones/{promocion}', [PromocionController::class, 'destroy'])->name('promociones.destroy');
+
+    Route::get('/perfil',   [UsuarioController::class, 'perfil'])->name('perfil');
+    Route::put('/perfil',   [UsuarioController::class, 'actualizarPerfil'])->name('perfil.update');
+    Route::put('/password', [UsuarioController::class, 'cambiarPassword'])->name('password.update');
 });
 
 /* ══════════════════════════════════════════
