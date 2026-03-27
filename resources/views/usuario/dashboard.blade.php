@@ -265,7 +265,7 @@
 
     {{-- CTA admin --}}
     @php
-        $adminTel     = '51981829717'; // ← cambia por el número real
+        $adminTel     = '51974536918'; // ← cambia por el número real
         $adminEmail   = 'admin@siscitas.com'; // ← cambia por el correo real
         $adminMsg     = urlencode("Hola, soy {$user->nombre_usuario} y quiero activar/renovar mi publicidad en SisCitas.");
         $adminWa      = "https://wa.me/{$adminTel}?text={$adminMsg}";

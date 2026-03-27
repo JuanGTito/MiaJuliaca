@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller {
@@ -49,5 +50,33 @@ class AdminController extends Controller {
         if ($user->isAdmin()) return back()->with('error', 'No puedes eliminar un admin.');
         $user->delete();
         return redirect()->route('admin.usuarios')->with('success', 'Usuario eliminado.');
+    }
+
+    public function perfil() {
+        $user = Auth::user();
+        return view('admin.perfil', compact('user'));
+    }
+
+    public function actualizarPerfil(Request $request) {
+        $request->validate([
+            'nombre_usuario'    => 'nullable|string|max:1000',
+            'email'         => 'required|string|max:100',
+        ]);
+        Auth::user()->update($request->only([
+            'nombre_usuario', 'email'
+        ]));
+        return back()->with('success', 'Perfil actualizado correctamente.');
+    }
+
+    public function cambiarPassword(Request $request) {
+        $request->validate([
+            'password_actual' => 'required',
+            'password'        => 'required|confirmed|min:6',
+        ]);
+        if (!Hash::check($request->password_actual, Auth::user()->password)) {
+            return back()->withErrors(['password_actual' => 'La contraseña actual no es correcta.']);
+        }
+        Auth::user()->update(['password' => Hash::make($request->password)]);
+        return back()->with('success', 'Contraseña actualizada correctamente.');
     }
 }

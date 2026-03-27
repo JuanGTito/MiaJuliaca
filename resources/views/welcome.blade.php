@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     {{-- ═══ SEO PRIMARIO ═══ --}}
-    <title>Kinesiologas en Juliaca | Escorts y Relax Juliaca — MiaJuliaca</title>
+    <title>MiaJuliaca: Kinesiologas en Juliaca | Escorts Modelos y Putas </title>
     <meta name="description" content="Kinesiologas en Juliaca disponibles ahora mismo. Escorts, damas de compañía y relax en Juliaca y Puno. Perfiles verificados con fotos reales y contacto directo por WhatsApp.">
-    <meta name="keywords" content="kinesiologas juliaca, escorts juliaca, relax juliaca, chicas relax juliaca, kines juliaca, damas de compañia juliaca, servicio relax juliaca, putas juliaca, prostitutas juliaca, acompañantes juliaca, kinesiologas puno, relax puno, escorts puno">
+    <meta name="keywords" content="kinesiologas juliaca, escorts putas juliaca, servicio relax juliaca, chicas relax juliaca, kines juliaca, damas de compañia juliaca, servicio relax juliaca, putas juliaca, servicio prostitutas juliaca, acompañantes juliaca, kinesiologas puno, relax puno, escorts puno">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <meta name="author" content="MiaJuliaca">
 
