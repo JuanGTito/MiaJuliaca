@@ -32,42 +32,29 @@
         :root {
             --rose: #e8436a; --rose-dark: #c2274e;
             --rose-glow: rgba(232,67,106,.3); --rose-soft: rgba(232,67,106,.08);
-            --gold: #d4a853;
-            --bg: #0a0a14; --surface: #111119; --surface-2: #181825;
+            --gold: #d4a853; --gold-soft: rgba(212,168,83,.10);
+            --bg: #0a0a14; --surface: #111119; --surface-2: #181825; --surface-3: #202030;
             --border: rgba(255,255,255,.07); --border-2: rgba(255,255,255,.12);
+            --border-gold: rgba(212,168,83,.2);
             --text: #f0f0f5; --text-2: #a0a0b8; --text-3: #55556a;
             --success: #10d98a;
         }
 
-        /* Hero glow */
-        .hero-glow::before {
-            content: '';
-            position: absolute;
-            width: 700px; height: 700px; border-radius: 50%;
-            background: radial-gradient(circle, rgba(232,67,106,.1) 0%, transparent 70%);
-            top: 50%; left: 50%; transform: translate(-50%, -50%);
-            pointer-events: none;
-        }
+        .card-verificada { border-left: 3px solid var(--gold) !important; }
+        .card-inactiva   { border-left: 3px solid var(--surface-3) !important; }
 
-        /* Card top accent */
-        .perfil-card::before {
-            content: '';
-            position: absolute; top: 0; left: 0; right: 0; height: 3px;
-            background: linear-gradient(90deg, var(--rose), var(--rose-dark));
-            opacity: 0; transition: opacity .2s; border-radius: 14px 14px 0 0;
-        }
-        .perfil-card:hover::before { opacity: 1; }
-
-        /* Line clamp */
-        .line-clamp-3 {
+        .line-clamp-2 {
             display: -webkit-box;
-            -webkit-line-clamp: 3;
+            -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
 
-        @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-        .fade-up { animation: fadeUp .5s ease both; }
+        .perfil-row { transition: background .15s, transform .15s; }
+        .perfil-row:hover { background: var(--surface-2) !important; transform: translateX(3px); }
+
+        @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+        .fade-up { animation: fadeUp .4s ease both; }
     </style>
 </head>
 
@@ -86,11 +73,6 @@
     </a>
 
     <div class="flex items-center gap-2 md:gap-3">
-        <a href="{{ route('perfiles') }}"
-           class="hidden sm:inline-flex items-center px-3 md:px-4 py-2 rounded-lg text-sm font-semibold transition-all no-underline"
-           style="background:transparent;color:var(--text-2);border:1px solid var(--border)">
-            Ver perfiles
-        </a>
         @auth
             @if(Auth::user()->isAdmin())
                 <a href="{{ route('admin.dashboard') }}"
@@ -121,173 +103,254 @@
 </nav>
 
 {{-- ═══════════════════════════════
-     HERO
+     PERFILES
 ═══════════════════════════════ --}}
-<section class="hero-glow relative overflow-hidden text-center px-5 pt-12 pb-10 md:px-16 md:pt-16 md:pb-12">
-    <div class="relative z-10 max-w-xl mx-auto fade-up">
+<div class="max-w-3xl mx-auto px-4 md:px-8 py-8 pb-12">
 
-        {{-- Badge --}}
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-5"
-             style="background:rgba(232,67,106,.1);border:1px solid rgba(232,67,106,.3);color:var(--rose)">
-            ✨ Perfiles destacados
-        </div>
-
-        {{-- Título --}}
-        <h1 class="font-cormorant font-bold leading-[1.08] mb-4"
-            style="font-size:clamp(2.4rem,6vw,4.5rem)">
-            Encuentra tu<br>
-            <em style="font-style:italic;color:var(--rose)">conexión perfecta</em>
-        </h1>
-
-        {{-- Subtítulo --}}
-        <p class="max-w-md mx-auto mb-8 leading-relaxed text-sm md:text-base"
-           style="color:var(--text-2)">
-            Descubre perfiles exclusivos disponibles ahora mismo en SisCitas.
-        </p>
-
-        {{-- CTAs --}}
-        <div class="flex flex-wrap gap-3 justify-center">
-            <a href="{{ route('perfiles') }}"
-               class="inline-flex items-center px-5 py-2.5 rounded-lg text-sm md:text-base font-semibold transition-all no-underline"
-               style="background:transparent;color:var(--text-2);border:1px solid var(--border)">
-                Ver todos los perfiles →
-            </a>
-            @guest
-                <a href="{{ route('register') }}"
-                   class="inline-flex items-center px-5 py-2.5 rounded-lg text-sm md:text-base font-bold text-white transition-all no-underline"
-                   style="background:var(--rose)">
-                    Publicar mi perfil
-                </a>
-            @endguest
-        </div>
-    </div>
-</section>
-
-{{-- ═══════════════════════════════
-     PERFILES ACTIVOS
-═══════════════════════════════ --}}
-<section class="px-5 md:px-16 pb-12 md:pb-16">
-
-    {{-- Header sección --}}
-    <div class="flex items-end justify-between flex-wrap gap-4 mb-6 md:mb-7">
-        <div>
-            <div class="text-xs font-bold uppercase tracking-[.12em] mb-1" style="color:var(--rose)">
-                Disponibles ahora
-            </div>
-            <h2 class="font-cormorant font-bold" style="font-size:clamp(1.5rem,3vw,2.2rem)">
-                Perfiles activos
-                @if($perfiles->count() > 0)
-                    <span class="text-sm font-normal" style="color:var(--text-3);font-family:'Outfit',sans-serif">
-                        — {{ $perfiles->count() }} {{ $perfiles->count() === 1 ? 'perfil' : 'perfiles' }}
-                    </span>
-                @endif
-            </h2>
-        </div>
-        <a href="{{ route('perfiles') }}"
-           class="text-sm no-underline whitespace-nowrap transition-colors"
-           style="color:var(--text-2)">
-            Ver directorio completo →
-        </a>
-    </div>
-
-    {{-- Grid o empty state --}}
     @if($perfiles->isEmpty())
-        <div class="text-center py-16 px-8" style="color:var(--text-3)">
+        <div class="text-center py-20 px-8" style="color:var(--text-3)">
             <div class="text-6xl mb-4">🌙</div>
             <h3 class="font-cormorant text-2xl mb-2" style="color:var(--text-2)">Sin perfiles activos por ahora</h3>
             <p class="text-sm">Próximamente habrá perfiles disponibles. Vuelve pronto.</p>
         </div>
+
     @else
-        <div class="grid gap-4 md:gap-5"
-             style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">
-            @foreach($perfiles as $perfil)
-                @php
-                    $diasRestantes = max(0, (int) now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($perfil->promo_fecha_fin), false));
-                    $portada = $perfil->fotos->where('es_portada', true)->first() ?? $perfil->fotos->first();
-                @endphp
+        @php
+            $verificados = $perfiles->filter(fn($p) => !is_null($p->promo_fecha_fin));
+            $sin_promo   = $perfiles->filter(fn($p) =>  is_null($p->promo_fecha_fin));
+            // Las 2 últimas verificadas (más recientes por promo_fecha_fin)
+            $hero_fotos  = $verificados->sortByDesc('promo_fecha_fin')->take(2);
+        @endphp
 
-                <a href="{{ route('perfil.publico', $perfil->nombre_usuario) }}"
-                   class="perfil-card relative block no-underline rounded-[14px] p-5 transition-all duration-200 hover:-translate-y-1"
-                   style="background:var(--surface);border:1px solid var(--border);color:inherit">
+        {{-- ═══ HERO BLOQUE ═══ --}}
+        <div class="relative flex mb-8 rounded-[14px] fade-up overflow-hidden"
+             style="background:var(--surface);border:1px solid var(--border-gold);min-height:190px">
 
-                    {{-- Badge promo --}}
-                    @if($diasRestantes <= 2 && $diasRestantes > 0)
-                        <span class="absolute top-3 right-3 flex items-center gap-1 px-2 py-0.5 rounded-full text-[.68rem] font-bold"
-                              style="background:rgba(212,168,83,.15);border:1px solid rgba(212,168,83,.3);color:var(--gold)">
-                            ⏳ {{ $diasRestantes }}d
-                        </span>
-                    @elseif($diasRestantes > 2)
-                        <span class="absolute top-3 right-3 flex items-center gap-1 px-2 py-0.5 rounded-full text-[.68rem] font-bold"
-                              style="background:rgba(212,168,83,.15);border:1px solid rgba(212,168,83,.3);color:var(--gold)">
-                            Verificado
-                        </span>
-                    @endif
+            {{-- Texto izquierda con padding --}}
+            <div class="flex-1 min-w-0 flex flex-col justify-center p-5 md:p-7">
+                <div class="text-[.68rem] font-bold uppercase tracking-[.14em] mb-2" style="color:var(--gold)">
+                    Juliaca Relax
+                </div>
+                <h1 class="font-cormorant font-bold leading-[1.1] mb-2"
+                    style="font-size:clamp(1.4rem,3vw,1.9rem);color:var(--text)">
+                    Kinesiologas y Escorts<br>en Juliaca
+                </h1>
+                <p class="text-xs leading-relaxed mb-4" style="color:var(--text-2);max-width:320px">
+                    Bienvenido a <strong style="color:var(--text)">Juliaca Relax</strong> — anuncios de Kinesiologas, Escorts, Modelos, Damas de compañía y más en Juliaca.
+                </p>
+                <div>
+                    <a href="{{ route('perfiles') }}"
+                       class="inline-flex items-center px-4 py-2 rounded-lg text-xs font-bold text-white no-underline transition-all"
+                       style="background:var(--rose)">
+                        Ver Kinesiologas Disponibles →
+                    </a>
+                </div>
+            </div>
 
-                    {{-- Avatar --}}
-                    <div class="w-35 h-35 rounded-full mx-auto mb-4 overflow-hidden flex items-center justify-center text-2xl font-bold text-white shrink-0"
-                         style="{{ $portada ? '' : 'background:linear-gradient(135deg,var(--rose),var(--rose-dark))' }}">
-                        @if($portada)
-                            <img src="{{ asset('storage/'.$portada->ruta) }}"
-                                 class="w-full h-full object-cover"
-                                 alt="{{ $perfil->nombre_usuario }}">
-                        @else
-                            {{ strtoupper(substr($perfil->nombre_usuario, 0, 1)) }}
-                        @endif
-                    </div>
-
-                    {{-- Nombre --}}
-                    <div class="font-cormorant text-xl font-bold text-center mb-1" style="color:var(--text)">
-                        {{ $perfil->nombre_usuario }}
-                    </div>
-
-                    {{-- Ciudad / edad --}}
-                    <div class="text-center text-xs mb-3" style="color:var(--text-3)">
-                        @if($perfil->ciudad) {{ $perfil->ciudad }} @endif
-                        @if($perfil->edad) · {{ $perfil->edad }} años @endif
-                    </div>
-
-                    {{-- Descripción --}}
-                    @if($perfil->descripcion)
-                        <p class="line-clamp-3 text-sm leading-relaxed mb-3" style="color:var(--text-2);min-height:3.8em">
-                            {{ $perfil->descripcion }}
-                        </p>
-                    @else
-                        <p class="text-sm italic mb-3" style="color:var(--text-3);min-height:3.8em">
-                            Sin descripción aún.
-                        </p>
-                    @endif
-
-                    {{-- Footer --}}
-                    <div class="flex items-center justify-between pt-3"
-                         style="border-top:1px solid var(--border)">
-                        <span class="font-bold text-base" style="color:var(--success)">
-                            {{ $perfil->precio ? 'S/. '.number_format($perfil->precio, 0) : 'Consultar' }}
-                        </span>
-                        <span class="text-base" style="color:var(--text-3)">
-                            {{ $perfil->numero_celular ?? 'Sin contacto' }}
-                        </span>
-                    </div>
-                </a>
-            @endforeach
+            {{-- Fotos derecha: las 2 últimas verificadas, pegadas al borde --}}
+            @if($hero_fotos->count() > 0)
+                <div class="flex shrink-0" style="gap:4px;padding:4px 4px 4px 0">
+                    @foreach($hero_fotos as $hp)
+                        @php $hPortada = $hp->fotos->where('es_portada', true)->first() ?? $hp->fotos->first(); @endphp
+                        <a href="{{ route('perfil.publico', $hp->nombre_usuario) }}"
+                           class="relative block no-underline overflow-hidden rounded-[10px]"
+                           style="width:120px;border:1px solid rgba(212,168,83,.25)">
+                            @if($hPortada)
+                                <img src="{{ asset('storage/'.$hPortada->ruta) }}"
+                                     class="w-full h-full object-contain"
+                                     style="display:block;background:#0a0a14"
+                                     alt="{{ $hp->nombre_usuario }}">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center font-cormorant text-2xl font-bold text-white"
+                                     style="background:linear-gradient(135deg,var(--rose),var(--rose-dark))">
+                                    {{ strtoupper(substr($hp->nombre_usuario, 0, 1)) }}
+                                </div>
+                            @endif
+                            <div class="absolute bottom-0 left-0 right-0 px-1.5 py-1.5 text-center"
+                                 style="background:linear-gradient(transparent,rgba(0,0,0,.82))">
+                                <span class="font-cormorant text-xs font-bold text-white truncate block">
+                                    {{ $hp->nombre_usuario }}
+                                </span>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            @endif
         </div>
+
+        {{-- VERIFICADOS --}}
+        @if($verificados->count() > 0)
+            <div class="flex items-center gap-3 mb-4 fade-up">
+                <span class="text-[.7rem] font-bold uppercase tracking-[.12em]" style="color:var(--gold)">Kines Disponibles</span>
+                <div class="flex-1 h-px" style="background:var(--border-gold)"></div>
+                <span class="text-[.7rem]" style="color:var(--text-3)">{{ $verificados->count() }}</span>
+            </div>
+
+            <div class="flex flex-col gap-3 mb-10">
+                @foreach($verificados as $perfil)
+                    @php
+                        $diasRestantes = max(0, (int) now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($perfil->promo_fecha_fin), false));
+                        $portada = $perfil->fotos->where('es_portada', true)->first() ?? $perfil->fotos->first();
+                    @endphp
+
+                    <a href="{{ route('perfil.publico', $perfil->nombre_usuario) }}"
+                       class="perfil-row card-verificada flex items-start gap-4 no-underline rounded-xl p-4"
+                       style="background:var(--surface);border:1px solid var(--border-gold);color:inherit">
+
+                        {{-- Foto vertical --}}
+                        <div class="shrink-0 w-24 h-28 md:w-28 md:h-36 rounded-[10px] overflow-hidden flex items-center justify-center text-2xl font-bold text-white"
+                             style="{{ $portada ? '' : 'background:linear-gradient(135deg,var(--rose),var(--rose-dark))' }}">
+                            @if($portada)
+                                <img src="{{ asset('storage/'.$portada->ruta) }}"
+                                     class="w-full h-full object-cover"
+                                     alt="{{ $perfil->nombre_usuario }}">
+                            @else
+                                {{ strtoupper(substr($perfil->nombre_usuario, 0, 1)) }}
+                            @endif
+                        </div>
+
+                        {{-- Info --}}
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap mb-1">
+                                <span class="font-cormorant text-xl font-bold leading-tight" style="color:var(--rose)">
+                                    {{ $perfil->nombre_usuario }}
+                                </span>
+                                @if($diasRestantes <= 2 && $diasRestantes > 0)
+                                    <span class="text-[.65rem] font-bold px-1.5 py-0.5 rounded-full"
+                                          style="background:var(--gold-soft);border:1px solid rgba(212,168,83,.25);color:var(--gold)">
+                                        ⏳ {{ $diasRestantes }}d
+                                    </span>
+                                @else
+                                    <span class="text-[.65rem] font-bold px-1.5 py-0.5 rounded-full"
+                                          style="background:var(--gold-soft);border:1px solid rgba(212,168,83,.25);color:var(--gold)">
+                                        ✓ Verificada
+                                    </span>
+                                @endif
+                            </div>
+
+                            @if($perfil->descripcion)
+                                <p class="line-clamp-2 text-sm leading-relaxed mb-2" style="color:var(--text-2)">
+                                    {{ $perfil->descripcion }}
+                                </p>
+                            @else
+                                <p class="text-sm italic mb-2" style="color:var(--text-3)">Sin descripción.</p>
+                            @endif
+
+                            <div class="flex flex-wrap items-center gap-3 text-xs" style="color:var(--text-3)">
+                                @if($perfil->edad)
+                                    <span>🗓 {{ $perfil->edad }} años</span>
+                                @endif
+                                @if($perfil->ciudad)
+                                    <span>📍 {{ $perfil->ciudad }}</span>
+                                @endif
+                                @if($perfil->precio)
+                                    <span class="font-bold text-sm" style="color:var(--success)">
+                                        S/. {{ number_format($perfil->precio, 0) }}
+                                    </span>
+                                @endif
+                                @if($perfil->numero_celular)
+                                    <span>{{ $perfil->numero_celular }}</span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="shrink-0 self-center text-lg" style="color:var(--gold)">→</div>
+                    </a>
+                @endforeach
+            </div>
+        @endif
+
+        {{-- SIN PROMO --}}
+        @if($sin_promo->count() > 0)
+            <div class="flex items-center gap-3 mb-4 fade-up">
+                <span class="text-[.7rem] font-bold uppercase tracking-[.12em]" style="color:var(--text-3)">Sin verificación</span>
+                <div class="flex-1 h-px" style="background:var(--border)"></div>
+                <span class="text-[.7rem]" style="color:var(--text-3)">{{ $sin_promo->count() }}</span>
+            </div>
+
+            <div class="flex flex-col gap-3">
+                @foreach($sin_promo as $perfil)
+                    @php
+                        $portada = $perfil->fotos->where('es_portada', true)->first() ?? $perfil->fotos->first();
+                    @endphp
+
+                    <a href="{{ route('perfil.publico', $perfil->nombre_usuario) }}"
+                       class="perfil-row card-inactiva flex items-start gap-4 no-underline rounded-xl p-4 opacity-70 hover:opacity-100"
+                       style="background:var(--surface);border:1px solid var(--border);color:inherit">
+
+                        <div class="shrink-0 w-24 h-28 md:w-28 md:h-36 rounded-[10px] overflow-hidden flex items-center justify-center text-2xl font-bold"
+                             style="background:var(--surface-3);color:var(--text-3);filter:grayscale(.7)">
+                            @if($portada)
+                                <img src="{{ asset('storage/'.$portada->ruta) }}"
+                                     class="w-full h-full object-cover"
+                                     alt="{{ $perfil->nombre_usuario }}">
+                            @else
+                                {{ strtoupper(substr($perfil->nombre_usuario, 0, 1)) }}
+                            @endif
+                        </div>
+
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap mb-1">
+                                <span class="font-cormorant text-xl font-bold leading-tight" style="color:var(--text)">
+                                    {{ $perfil->nombre_usuario }}
+                                </span>
+                                <span class="text-[.65rem] font-bold px-1.5 py-0.5 rounded-full"
+                                      style="background:var(--surface-2);border:1px solid var(--border);color:var(--text-3)">
+                                    Sin publicidad
+                                </span>
+                            </div>
+
+                            @if($perfil->descripcion)
+                                <p class="line-clamp-2 text-sm leading-relaxed mb-2" style="color:var(--text-2)">
+                                    {{ $perfil->descripcion }}
+                                </p>
+                            @else
+                                <p class="text-sm italic mb-2" style="color:var(--text-3)">Sin descripción.</p>
+                            @endif
+
+                            <div class="flex flex-wrap items-center gap-3 text-xs" style="color:var(--text-3)">
+                                @if($perfil->edad)
+                                    <span>🗓 {{ $perfil->edad }} años</span>
+                                @endif
+                                @if($perfil->ciudad)
+                                    <span>📍 {{ $perfil->ciudad }}</span>
+                                @endif
+                                @if($perfil->precio)
+                                    <span class="font-bold text-sm" style="color:var(--success)">
+                                        S/. {{ number_format($perfil->precio, 0) }}
+                                    </span>
+                                @endif
+                                @if($perfil->numero_celular)
+                                    <span>{{ $perfil->numero_celular }}</span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="shrink-0 self-center text-lg" style="color:var(--text-3)">→</div>
+                    </a>
+                @endforeach
+            </div>
+        @endif
     @endif
-</section>
+</div>
 
 {{-- ═══════════════════════════════
      BANNER CTA (solo guests)
 ═══════════════════════════════ --}}
 @guest
-<div class="mx-5 md:mx-16 mb-12 md:mb-16 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 p-6 md:p-8 rounded-[14px]"
-     style="background:linear-gradient(135deg,rgba(232,67,106,.12),rgba(200,40,80,.06));border:1px solid rgba(232,67,106,.2)">
-    <div>
-        <h3 class="font-cormorant text-xl md:text-2xl font-bold mb-1">¿Quieres aparecer aquí?</h3>
-        <p class="text-sm" style="color:var(--text-2)">Regístrate, crea tu perfil y contáctanos para activar tu publicidad.</p>
+<div class="max-w-3xl mx-auto px-4 md:px-8 mb-12">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 p-6 md:p-8 rounded-[14px]"
+         style="background:linear-gradient(135deg,rgba(232,67,106,.12),rgba(200,40,80,.06));border:1px solid rgba(232,67,106,.2)">
+        <div>
+            <h3 class="font-cormorant text-xl md:text-2xl font-bold mb-1">¿Quieres aparecer aquí?</h3>
+            <p class="text-sm" style="color:var(--text-2)">Regístrate, crea tu perfil y contáctanos para activar tu publicidad.</p>
+        </div>
+        <a href="{{ route('register') }}"
+           class="inline-flex items-center whitespace-nowrap px-5 py-2.5 rounded-lg text-sm font-bold text-white transition-all no-underline shrink-0"
+           style="background:var(--rose)">
+            Crear mi perfil →
+        </a>
     </div>
-    <a href="{{ route('register') }}"
-       class="inline-flex items-center whitespace-nowrap px-5 py-2.5 rounded-lg text-sm font-bold text-white transition-all no-underline shrink-0"
-       style="background:var(--rose)">
-        Crear mi perfil →
-    </a>
 </div>
 @endguest
 
@@ -305,6 +368,7 @@
         © {{ date('Y') }} MiaJuliaca. Todos los derechos reservados.
     </span>
 </footer>
+
 @verbatim
 <script type="application/ld+json">
 {
